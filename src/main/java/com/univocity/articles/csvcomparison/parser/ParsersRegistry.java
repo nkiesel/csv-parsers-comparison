@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.univocity.articles.csvcomparison.parser;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ParsersRegistry {
@@ -24,36 +22,11 @@ public class ParsersRegistry {
     private static List<AbstractParser> parsers = null;
 
     public static List<AbstractParser> getParsers() {
-        if(parsers == null) {
-            parsers = getAllParsers();
+        if (parsers == null) {
+            // Get Parsers for current VM version
+            parsers = Parsers.list();
         }
         return parsers;
     }
 
-    private static List<AbstractParser> getAllParsers() {
-        // Get Parsers for current VM version
-        final List<AbstractParser> parsers = new ArrayList<AbstractParser>(Parsers.list());
-
-        // Also include Java 8 only parsers?
-        final String javaVersion = System.getProperty("java.version");
-        System.out.println("Detected Java version: " + javaVersion);
-
-        if(javaVersion != null && javaVersion.startsWith("1.8.")) {
-            System.out.println("Also enabling Java 8 only parsers!");
-            parsers.addAll(getJava8OnlyParsers());
-        }
-
-        return Collections.unmodifiableList(parsers);
-    }
-
-    private static List<AbstractParser> getJava8OnlyParsers() {
-        try {
-            final Class<?> java8Parsers = Class.forName("com.univocity.articles.csvcomparison.parser8.Parsers");
-            return (List<AbstractParser>) java8Parsers.getMethod("list").invoke(null);
-        } catch (final LinkageError e) {
-            throw new RuntimeException("Cannot get Java 8 Only parsers", e);
-        } catch (final Exception e) {
-            throw new RuntimeException("Cannot get Java 8 Only parsers", e);
-        }
-    }
 }

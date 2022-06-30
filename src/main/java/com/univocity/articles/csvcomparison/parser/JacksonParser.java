@@ -17,13 +17,14 @@ public class JacksonParser extends AbstractParser {
 	@Override
 	public void processRows(final Reader input) throws Exception {
 
-		CsvMapper csvMapper = new CsvMapper();
-		csvMapper.enable(CsvParser.Feature.WRAP_AS_ARRAY);
+        CsvMapper csvMapper = new CsvMapper().enable(CsvParser.Feature.WRAP_AS_ARRAY);
 
-		MappingIterator<String[]> iterator = csvMapper.readerFor(String[].class).readValues(input);
+        MappingIterator<List<String>> iterator = csvMapper
+            .readerForListOf(String.class)
+            .readValues(input);
 
 		while (iterator.hasNext()) {
-			process(iterator.next());
+			process(iterator.nextValue());
 		}
 
 	}
@@ -31,14 +32,15 @@ public class JacksonParser extends AbstractParser {
 	@Override
 	public List<String[]> parseRows(final Reader input) throws Exception {
 
-		CsvMapper csvMapper = new CsvMapper();
-		csvMapper.enable(CsvParser.Feature.WRAP_AS_ARRAY);
+		CsvMapper csvMapper = new CsvMapper().enable(CsvParser.Feature.WRAP_AS_ARRAY);
 
-		MappingIterator<String[]> iterator = csvMapper.reader(String[].class).readValues(input);
+        MappingIterator<List<String>> iterator = csvMapper
+            .readerForListOf(String.class)
+            .readValues(input);
 
-		List<String[]> values = new ArrayList<String[]>();
+		List<String[]> values = new ArrayList<>();
 		while (iterator.hasNext()) {
-			values.add(iterator.next());
+			values.add(iterator.nextValue().toArray(new String[0]));
 		}
 
 		return values;

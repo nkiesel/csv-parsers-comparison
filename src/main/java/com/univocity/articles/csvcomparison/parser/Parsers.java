@@ -19,7 +19,7 @@ import java.util.*;
 
 public class Parsers {
 
-	private static final List<AbstractParser> parsers = Arrays.asList(
+	private static final List<AbstractParser> parsers = List.of(
 			new CSVeedParser(),
 			new BeanIoParser(),
 			new CommonsCsvParser(),
@@ -44,6 +44,6 @@ public class Parsers {
 	}
 
 	public static List<AbstractParser> list() {
-		return Collections.unmodifiableList(parsers);
+		return parsers;
 	}
 }

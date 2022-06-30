@@ -40,7 +40,7 @@ class CommonsCsvParser extends AbstractParser {
 		CSVFormat format = CSVFormat.RFC4180;
 		CSVParser parser = new CSVParser(input, format);
 
-		List<String[]> rows = new ArrayList<String[]>();
+		List<String[]> rows = new ArrayList<>();
 
 		for (CSVRecord record : parser) {
 			String[] row = new String[record.size()];
