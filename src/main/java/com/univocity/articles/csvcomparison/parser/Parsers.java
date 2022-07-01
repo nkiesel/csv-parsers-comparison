@@ -15,35 +15,36 @@
  ******************************************************************************/
 package com.univocity.articles.csvcomparison.parser;
 
-import java.util.*;
+import java.util.List;
+
 
 public class Parsers {
 
-	private static final List<AbstractParser> parsers = List.of(
-			// new CSVeedParser(),
-			// new BeanIoParser(),
-			new CommonsCsvParser(),
-			//new DataPipelineCsvParser(), // commercial, depends on license. I can't include on github.
-			// new EsperioCsvParser(),
-			//new FlatpackParser(),// appears to hang while processing worldcitiespop.txt & consumes all heap space when parsing a huge file
-			// new GenJavaParser(),
-			// new JavaCsvParser(),
-			// new JCsvParser(),
-			new OpenCsvParser(),
-            // new SimpleCsvParser(),
-			// new SuperCsvParser(),
-			// new UnivocityParser(),
-			// new WayIoParser(),
-			// new OsterMillerParser(),
-			// new SimpleFlatMapperParser(),
-        // new ProductCollectionsParser(),
+    private static final List<AbstractParser> parsers = List.of(
+        new CSVeedParser(),
+        new BeanIoParser(),
+        new CommonsCsvParser(),
+        //new DataPipelineCsvParser(), // commercial, depends on license. I can't include on github.
+        new EsperioCsvParser(),
+        //new FlatpackParser(),// appears to hang while processing worldcitiespop.txt & consumes all heap space when parsing a huge file
+        new GenJavaParser(),
+        new JavaCsvParser(),
+        new JCsvParser(),
+        new OpenCsvParser(),
+        new SimpleCsvParser(),
+        new SuperCsvParser(),
+        new UnivocityParser(),
+        new WayIoParser(),
+        new OsterMillerParser(),
+        new SimpleFlatMapperParser(),
+        new ProductCollectionsParser(),
         new JacksonParser()
-	);
+    );
 
-	private Parsers() {
-	}
+    private Parsers() {
+    }
 
-	public static List<AbstractParser> list() {
-		return parsers;
-	}
+    public static List<AbstractParser> list() {
+        return parsers;
+    }
 }

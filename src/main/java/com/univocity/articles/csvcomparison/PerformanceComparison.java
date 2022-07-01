@@ -194,7 +194,7 @@ public class PerformanceComparison {
 
 	public static void main(String... args) throws Exception {
 
-		int loops = 2;
+		int loops = 6;
 
 		File input = null;
 		final URL inputUrl = PerformanceComparison.class.getClassLoader().getResource(WORLDCITIES_FILE);
