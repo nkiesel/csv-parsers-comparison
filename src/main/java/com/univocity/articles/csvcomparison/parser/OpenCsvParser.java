@@ -40,4 +40,13 @@ class OpenCsvParser extends AbstractParser {
         }
 	}
 
+    @Override
+    public boolean writeRows(List<String[]> data, Writer writer) throws Exception {
+        try (CSVWriter wr = new CSVWriter(writer)) {
+            for (var record : data) {
+                wr.writeNext(record);
+            }
+        }
+        return true;
+    }
 }

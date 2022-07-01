@@ -38,24 +38,36 @@ public class PerformanceComparison {
 	}
 
 	private long run(AbstractParser parser) throws Exception {
-		Reader reader = null;
-		try {
-			reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), fileEncoding));
+        try (Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), fileEncoding))) {
 
-			long start = System.currentTimeMillis();
+            long start = System.currentTimeMillis();
 
-			parser.processRows(reader);
+            parser.processRows(reader);
 
-			long time = (System.currentTimeMillis() - start);
-			System.out.println("took " + time + " ms to read " + parser.getRowCount() + " rows. ");
-			parser.resetRowCount();
-			System.setProperty("blackhole", parser.getBlackhole());
-			return time;
-		} finally {
-			if (reader != null) {
-				reader.close();
-			}
-		}
+            long time = (System.currentTimeMillis() - start);
+            System.out.println("took " + time + " ms to read " + parser.getRowCount() + " rows. ");
+            parser.resetRowCount();
+            System.setProperty("blackhole", parser.getBlackhole());
+            return time;
+        }
+	}
+
+	private long deserialize(AbstractParser parser) throws Exception {
+        try (Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), fileEncoding))) {
+            List<String[]> data = parser.parseRows(reader);
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file.getName() + "." + parser.getName()))) {
+                long start = System.currentTimeMillis();
+
+                if (!parser.writeRows(data, writer)) {
+                    System.out.println("Write not implemented. ");
+                    return -1;
+                }
+
+                long time = (System.currentTimeMillis() - start);
+                System.out.println("took " + time + " ms to write " + data.size() + " rows. ");
+                return time;
+            }
+        }
 	}
 
 	private TreeMap<Long, String> orderByAverageTime(int loops, Map<String, Long[]> stats) {
@@ -153,9 +165,36 @@ public class PerformanceComparison {
 		printResults(loops, stats);
 	}
 
+	public void executeSerialize(final int loops) throws Exception {
+		Map<String, Long[]> stats = new HashMap<String, Long[]>();
+
+		for (final AbstractParser parser : ParsersRegistry.getParsers()) {
+			Long[] times = new Long[loops];
+			Arrays.fill(times, -1L);
+			stats.put(parser.getName(), times);
+		}
+
+		for (int i = 0; i < loops; i++) {
+			for (final AbstractParser parser : ParsersRegistry.getParsers()) {
+				try {
+					System.out.print("Loop " + (i + 1) + " - executing " + parser.getName() + "... ");
+					long time = deserialize(parser);
+
+					stats.get(parser.getName())[i] = time;
+				} catch (Throwable ex) {
+					System.out.println("Parser " + parser.getName() + " threw exception: " + ex.getMessage());
+				}
+				System.gc();
+				Thread.sleep(500);
+			}
+		}
+
+		printResults(loops, stats);
+	}
+
 	public static void main(String... args) throws Exception {
 
-		int loops = 6;
+		int loops = 2;
 
 		File input = null;
 		final URL inputUrl = PerformanceComparison.class.getClassLoader().getResource(WORLDCITIES_FILE);
@@ -180,7 +219,7 @@ public class PerformanceComparison {
 		}
 
 
-		new PerformanceComparison(input, WORLDCITIES_FILE_ENCODING).execute(loops);
+        new PerformanceComparison(input, WORLDCITIES_FILE_ENCODING).execute(loops);
 
 		File hugeInput = null;
 		final URL hugeInputUrl = PerformanceComparison.class.getClassLoader().getResource(WORLDCITIES_HUGE_FILE);
@@ -218,6 +257,13 @@ public class PerformanceComparison {
 
 
 		new PerformanceComparison(hugeInput, WORLDCITIES_HUGE_FILE_ENCODING).execute(loops);
+
+        System.out.println("==================================");
+        System.out.println("========= Writing ================");
+        System.out.println("==================================");
+
+        new PerformanceComparison(input, WORLDCITIES_FILE_ENCODING).executeSerialize(loops);
+
 	}
 
 }

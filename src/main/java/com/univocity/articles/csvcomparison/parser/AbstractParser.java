@@ -59,4 +59,8 @@ public abstract class AbstractParser {
 
 	public abstract List<String[]> parseRows(Reader reader) throws Exception;
 
+    public boolean writeRows(List<String[]> data, Writer writer) throws Exception {
+        return false;
+    }
+
 }

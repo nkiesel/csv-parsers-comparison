@@ -18,6 +18,7 @@ package com.univocity.articles.csvcomparison.parser;
 import java.io.*;
 import java.util.*;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import org.apache.commons.csv.*;
 
 class CommonsCsvParser extends AbstractParser {
@@ -52,4 +53,13 @@ class CommonsCsvParser extends AbstractParser {
 		return rows;
 	}
 
+    @Override
+    public boolean writeRows(List<String[]> data, Writer writer) throws Exception {
+        try (CSVPrinter wr = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
+            for (var record : data) {
+                wr.printRecord((Object[]) record);
+            }
+        }
+        return true;
+    }
 }
